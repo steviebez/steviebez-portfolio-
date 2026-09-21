@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import Nav from './components/Nav.jsx';
 import Hero from './components/Hero.jsx';
 import Marquee from './components/Marquee.jsx';
 import Services from './components/Services.jsx';
@@ -13,7 +12,6 @@ export default function App() {
   useEffect(() => { document.documentElement.classList.add('js'); }, []);
   return (
     <>
-      <Nav />
       <Hero />
       <Marquee />
       <Services />
