@@ -35,12 +35,16 @@ export function FadeImg({ src, alt, eager = false }) {
     const img = ref.current;
     if (!img) return;
     const done = () => img.classList.add('ld');
-    if (img.complete && img.naturalWidth) done();
-    else { img.addEventListener('load', done); img.addEventListener('error', done); }
+    if (img.complete && img.naturalWidth) {
+      done();
+      return;
+    }
+    img.addEventListener('load', done);
+    img.addEventListener('error', done);
+    return () => {
+      img.removeEventListener('load', done);
+      img.removeEventListener('error', done);
+    };
   }, [src]);
-  return <img ref={ref} className="fadeimg" src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} {...(eager ? { fetchpriority: 'high' } : {})} />;
-}
-
-export function Eyebrow({ children }) {
-  return <Reveal><p className="sec-eyebrow">{children}</p></Reveal>;
+  return <img ref={ref} className="fadeimg" src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} {...(eager ? { fetchPriority: 'high' } : {})} />;
 }

@@ -1,22 +1,53 @@
 import { Reveal } from './ui.jsx';
+import { siteConfig } from '../../config/site.config';
+
+const contact = siteConfig.sections.find((s) => s.id === 'contact');
 
 export default function Contact() {
+  if (!contact || !contact.enabled) return null;
+  const d = contact.delays;
   return (
-    <section className="block" id="contact">
-      <div className="wrap">
-        <Reveal><p className="sec-eyebrow" style={{ textAlign: 'center' }}>05 — Contact</p></Reveal>
-        <Reveal delay={0.1}><h2 className="big">Imagine more<br />with me.</h2></Reveal>
-        <Reveal delay={0.2}>
-          <p><a className="btn-red" href="mailto:steviebez@gmail.com">steviebez@gmail.com</a></p>
+    <section className="block contact" id="contact">
+      <div className="wrap contact-head">
+        <Reveal>
+          <p className="contact-eyebrow">{contact.eyebrow}</p>
         </Reveal>
-        <Reveal delay={0.25}>
-          <form className="mini" name="contact" method="POST" data-netlify="true">
-            <input type="text" name="name" placeholder="Your name" required />
-            <input type="email" name="email" placeholder="Your email" required />
-            <textarea name="message" rows="4" placeholder="What are we making?" required />
-            <button className="btn-red" type="submit">Send →</button>
-          </form>
+        <Reveal delay={d.title}>
+          <h2 className="contact-title">{contact.title}</h2>
         </Reveal>
+      </div>
+      <div className="wrap contact-grid">
+        <Reveal delay={d.photo}>
+          <img
+            className="contact-photo"
+            src={contact.portrait}
+            alt={contact.portraitAlt}
+            loading="lazy"
+            decoding="async"
+          />
+        </Reveal>
+        <div className="contact-text">
+          <Reveal delay={d.about}>
+            <h3 className="contact-about">{contact.aboutTitle}</h3>
+          </Reveal>
+          <Reveal delay={d.body}>
+            <p className="contact-body">{contact.body}</p>
+          </Reveal>
+          <Reveal delay={d.buttons}>
+            <div className="contact-buttons">
+              {contact.buttons.map((b) => (
+                <a
+                  key={b.label}
+                  className={`contact-btn contact-btn-${b.style}`}
+                  href={b.href}
+                  {...(b.href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
+                >
+                  {b.label}
+                </a>
+              ))}
+            </div>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

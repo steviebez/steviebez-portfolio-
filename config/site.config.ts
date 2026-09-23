@@ -39,7 +39,7 @@ export interface FontStack {
 export interface Typography {
   display: FontStack;
   support: FontStack;
-  /** older stacks still referenced by not-yet-migrated styles; do not add new usages */
+  /** removed from the font request; kept here as a record of what was dropped */
   legacy: FontStack[];
   googleFontsUrl: string;
 }
@@ -95,7 +95,7 @@ export interface Animations {
     easing: string;
     observerThreshold: number;
   };
-  snap: { enabled: boolean; type: 'y proximity'; minWidth: number };
+  snap: { enabled: boolean; type: 'y proximity' | 'y mandatory'; minWidth: number };
   reducedMotion: string;
 }
 
@@ -141,6 +141,31 @@ export interface ServicesContent {
   enabled: boolean;
 }
 
+export interface WorkProjectImage {
+  src: string;
+  alt: string;
+}
+
+export interface WorkProject {
+  client: string;
+  /** section anchor: betway | spotify | kenvue */
+  id: string;
+  theme: 'dark' | 'paper';
+  /** imagery column side on desktop; stacked imagery-first on mobile */
+  imageSide: 'left' | 'right';
+  logo: string;
+  logoAlt: string;
+  /** betway mark ships black — invert to white on dark bands */
+  logoInvert: boolean;
+  headline: string;
+  body: string;
+  linkLabel: string;
+  linkHref: string;
+  /** static stack, no entrance animation */
+  images: WorkProjectImage[];
+  delays: { logo: number; headline: number; body: number; link: number };
+}
+
 export interface WorkContent {
   id: 'work';
   enabled: boolean;
@@ -148,6 +173,7 @@ export interface WorkContent {
   title: string;
   subLines: [string, string];
   delays: { eyebrow: number; title: number; sub: number };
+  projects: WorkProject[];
 }
 
 export interface StatsContent {
@@ -160,14 +186,81 @@ export interface ProcessContent {
   enabled: boolean;
 }
 
+export interface ContactButton {
+  label: string;
+  href: string;
+  style: 'outline' | 'filled';
+}
+
 export interface ContactContent {
   id: 'contact';
   enabled: boolean;
+  eyebrow: string;
+  title: string;
+  portrait: string;
+  portraitAlt: string;
+  aboutTitle: string;
+  body: string;
+  buttons: [ContactButton, ContactButton];
+  delays: { eyebrow: number; title: number; photo: number; about: number; body: number; buttons: number };
 }
 
 export interface FooterContent {
   id: 'footer';
   enabled: boolean;
+}
+
+export interface ShowreelContent {
+  id: 'showreel';
+  enabled: boolean;
+  eyebrow: string;
+  title: string;
+  poster: string;
+  posterAlt: string;
+  videoId: string;
+  delays: { eyebrow: number; title: number };
+}
+
+export interface ClientLogo {
+  name: string;
+  src: string;
+  alt: string;
+}
+
+export interface ClientsHeaderSegment {
+  text: string;
+  accent: boolean;
+}
+
+export interface ClientsContent {
+  id: 'clients';
+  enabled: boolean;
+  header: {
+    eyebrow: string;
+    lines: ClientsHeaderSegment[][];
+    delays: { eyebrow: number; title: number };
+  } | null;
+  logos: ClientLogo[];
+}
+
+export interface ArticleCard {
+  title: string;
+  body: string;
+  image: string;
+  imageAlt: string;
+  linkLabel: string;
+  linkHref: string;
+  delay: number;
+}
+
+export interface ArticlesContent {
+  id: 'articles';
+  enabled: boolean;
+  eyebrow: string;
+  title: string;
+  delays: { eyebrow: number; title: number };
+  left: [ArticleCard, ArticleCard];
+  right: [ArticleCard, ArticleCard];
 }
 
 export type SectionContent =
@@ -176,6 +269,9 @@ export type SectionContent =
   | MarqueeContent
   | ServicesContent
   | WorkContent
+  | ShowreelContent
+  | ClientsContent
+  | ArticlesContent
   | StatsContent
   | ProcessContent
   | ContactContent
@@ -230,12 +326,12 @@ export const siteConfig = {
       usage: 'eyebrows, skill lines, labels',
     },
     legacy: [
-      { family: 'Playfair Display', weights: [500, 600], fallback: 'Georgia, serif', usage: 'deprecated' },
-      { family: 'Inter', weights: [400, 500, 600, 700, 800], fallback: 'system-ui, sans-serif', usage: 'deprecated' },
-      { family: 'IBM Plex Mono', weights: [400, 500, 600], fallback: 'monospace', usage: 'deprecated' },
+      { family: 'Playfair Display', weights: [500, 600], fallback: 'Georgia, serif', usage: 'removed' },
+      { family: 'Inter', weights: [400, 500, 600, 700, 800], fallback: 'system-ui, sans-serif', usage: 'removed' },
+      { family: 'IBM Plex Mono', weights: [400, 500, 600], fallback: 'monospace', usage: 'removed' },
     ],
     googleFontsUrl:
-      'https://fonts.googleapis.com/css2?family=Prata&family=Barlow:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap',
+      'https://fonts.googleapis.com/css2?family=Prata&family=Barlow:wght@400;500;600;700&display=swap',
   },
   spacing: {
     scale: { s4: 4, s8: 8, s12: 12, s16: 16, s24: 24, s32: 32, s48: 48, s64: 64, s96: 96, s128: 128 },
@@ -269,7 +365,7 @@ export const siteConfig = {
       easing: 'cubic-bezier(.22,1,.36,1)',
       observerThreshold: 0,
     },
-    snap: { enabled: true, type: 'y proximity', minWidth: 1024 },
+    snap: { enabled: true, type: 'y mandatory', minWidth: 1024 },
     reducedMotion: 'force all visible, no transitions',
   },
   sections: [
@@ -281,6 +377,127 @@ export const siteConfig = {
       skillLines: ['Design – Animation', 'AI – Python – Houdini', 'ComfyUI – Agentic'],
       image: { src: 'images/hero-art.jpg', alt: '', objectPosition: 'center', eager: true },
       delays: { eyebrow: 0, name: 0.1, skills: 0.2 },
+    },
+    { id: 'marquee', enabled: false },
+    { id: 'services', enabled: false },
+    {
+      id: 'work',
+      enabled: true,
+      eyebrow: 'RECENT PROJECTS',
+      title: 'PORTFOLIO',
+      subLines: [
+        'MOTION DESIGN - CAMPAIGN CONTENT - SOCIAL MEDIA',
+        'AI IMAGE VIDEO - 3D MOTION - VIDEO EDITING',
+      ],
+      delays: { eyebrow: 0, title: 0.1, sub: 0.2 },
+      projects: [
+        {
+          client: 'Betway',
+          id: 'betway',
+          theme: 'dark',
+          imageSide: 'left',
+          logo: 'images/logo-betway.svg',
+          logoAlt: 'Betway',
+          logoInvert: true,
+          headline: 'LEADING COMPLETE REBRAND',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.',
+          linkLabel: 'PROJECT LINK >',
+          linkHref: 'https://www.behance.net/gallery/168940825/Betway-Esports-Evolution',
+          images: [
+            { src: 'images/betway-1.jpg', alt: 'Betway esports sports bonus banner' },
+            { src: 'images/betway-2.jpg', alt: 'Betway watch live in-play banner' },
+            { src: 'images/betway-3.jpg', alt: 'Betway Boost enhanced odds banner' },
+          ],
+          delays: { logo: 0, headline: 0.1, body: 0.2, link: 0.3 },
+        },
+        {
+          client: 'Kenvue',
+          id: 'kenvue',
+          theme: 'paper',
+          imageSide: 'left',
+          logo: 'images/logo-kenvue.png',
+          logoAlt: 'Kenvue',
+          logoInvert: false,
+          headline: 'CAMPAIGN CONTENT AND REGIONALIZATION',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.',
+          linkLabel: 'PROJECT LINK >',
+          linkHref: 'https://www.behance.net/gallery/249239709/KENVUE-BITES',
+          images: [],
+          delays: { logo: 0, headline: 0.1, body: 0.2, link: 0.3 },
+        },
+        {
+          client: 'Spotify',
+          id: 'spotify',
+          theme: 'dark',
+          imageSide: 'left',
+          logo: 'images/logo-spotify.png',
+          logoAlt: 'Spotify',
+          logoInvert: false,
+          headline: 'SOCIAL MEDIA CONTENT CREATION',
+          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.',
+          linkLabel: 'PROJECT LINK >',
+          linkHref: 'https://www.behance.net/gallery/249222587/Spotify-Bites-2023',
+          images: [
+            { src: 'images/spotify-1.jpg', alt: 'Spotify Wrapped top charts tiles' },
+            { src: 'images/spotify-2.jpg', alt: 'Spotify Wrapped social and concert tiles' },
+            { src: 'images/spotify-3.jpg', alt: 'Spotify Top Songs of 2023 tiles' },
+          ],
+          delays: { logo: 0, headline: 0.1, body: 0.2, link: 0.3 },
+        },
+      ],
+    },
+    {
+      id: 'showreel',
+      enabled: true,
+      eyebrow: '2023',
+      title: 'SHOWREEL',
+      poster: 'images/showreel-poster.jpg',
+      posterAlt: 'Stylized character floating above a glowing magenta phone booth',
+      videoId: 'JOVwH2UFHDQ',
+      delays: { eyebrow: 0, title: 0.1 },
+    },
+    { id: 'stats', enabled: false },
+    {
+      id: 'clients',
+      enabled: true,
+      header: {
+        eyebrow: 'CREATIVE COLLABORATORS',
+        lines: [
+          [
+            { text: 'BRANDS I ', accent: false },
+            { text: 'WORKED', accent: true },
+            { text: ' WITH AND', accent: false },
+          ],
+          [
+            { text: 'CREATED', accent: true },
+            { text: ' WITH', accent: false },
+          ],
+        ],
+        delays: { eyebrow: 0, title: 0.1 },
+      },
+      logos: [
+        { name: 'Oracle', src: 'images/logos/oracle.svg', alt: 'Oracle' },
+        { name: 'Sprite', src: 'images/logos/sprite.svg', alt: 'Sprite' },
+        { name: 'Kenvue', src: 'images/logos/kenvue.png', alt: 'Kenvue' },
+        { name: 'VML', src: 'images/logos/vml.png', alt: 'VML' },
+        { name: 'Betway', src: 'images/logos/betway.svg', alt: 'Betway' },
+        { name: 'Mondelez International', src: 'images/logos/mondelez.svg', alt: 'Mondelez International' },
+        { name: 'Audible', src: 'images/logos/audible.svg', alt: 'Audible' },
+        { name: 'Accenture', src: 'images/logos/accenture.svg', alt: 'Accenture' },
+        { name: 'Aromat', src: 'images/logos/aromat.png', alt: 'Aromat' },
+        { name: 'Spotify', src: 'images/logos/spotify.svg', alt: 'Spotify' },
+        { name: 'West Ham United', src: 'images/logos/westham.svg', alt: 'West Ham United' },
+        { name: 'BMW', src: 'images/logos/bmw.svg', alt: 'BMW' },
+        { name: 'Shell', src: 'images/logos/shell.svg', alt: 'Shell' },
+        { name: 'Razer', src: 'images/logos/razer.svg', alt: 'Razer' },
+        { name: 'Furia Esports', src: 'images/logos/furia.png', alt: 'Furia Esports' },
+        { name: 'G2 Esports', src: 'images/logos/g2.png', alt: 'G2 Esports' },
+        { name: 'WPP', src: 'images/logos/wpp.svg', alt: 'WPP' },
+        { name: 'Ford', src: 'images/logos/ford.svg', alt: 'Ford' },
+        { name: 'Nestle', src: 'images/logos/nestle.svg', alt: 'Nestle' },
+        { name: 'Philip Morris International', src: 'images/logos/pmi.svg', alt: 'Philip Morris International' },
+        { name: 'Sunglass Hut', src: 'images/logos/sunglass-hut.png', alt: 'Sunglass Hut' },
+      ],
     },
     {
       id: 'why',
@@ -317,22 +534,71 @@ export const siteConfig = {
         },
       ],
     },
-    { id: 'marquee', enabled: false },
-    { id: 'services', enabled: false },
     {
-      id: 'work',
+      id: 'articles',
       enabled: true,
-      eyebrow: 'RECENT PROJECTS',
-      title: 'PORTFOLIO',
-      subLines: [
-        'MOTION DESIGN - CAMPAIGN CONTENT - SOCIAL MEDIA',
-        'AI IMAGE VIDEO - 3D MOTION - VIDEO EDITING',
+      eyebrow: 'OF COURSE',
+      title: 'JUST MORE',
+      delays: { eyebrow: 0, title: 0.1 },
+      left: [
+        {
+          title: 'DIRECTING MACHINES',
+          body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+          image: 'images/article-painting.jpg',
+          imageAlt: 'Orange abstract painting with white line work',
+          linkLabel: 'PROJECT LINK >',
+          linkHref:
+            'https://www.linkedin.com/pulse/directing-machines-building-automated-creative-local-bezuidenhout-zzgjf/',
+          delay: 0.2,
+        },
+        {
+          title: 'BEHANCE PORTFOLIO',
+          body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+          image: 'images/article-painting.jpg',
+          imageAlt: 'Orange abstract painting with white line work',
+          linkLabel: 'PROJECT LINK >',
+          linkHref: 'https://www.behance.net/steviebez',
+          delay: 0.4,
+        },
       ],
-      delays: { eyebrow: 0, title: 0.1, sub: 0.2 },
+      right: [
+        {
+          title: 'DRIBBBLE',
+          body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+          image: 'images/article-painting.jpg',
+          imageAlt: 'Orange abstract painting with white line work',
+          linkLabel: 'PROJECT LINK >',
+          linkHref: 'https://dribbble.com/steviebez',
+          delay: 0.3,
+        },
+        {
+          title: 'AI WORKFLOW WITH MCP',
+          body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+          image: 'images/article-painting.jpg',
+          imageAlt: 'Orange abstract painting with white line work',
+          linkLabel: 'PROJECT LINK >',
+          linkHref:
+            'https://www.linkedin.com/pulse/developing-real-time-telemetry-dashboard-ltx-video-23-bezuidenhout-5laaf/',
+          delay: 0.5,
+        },
+      ],
     },
-    { id: 'stats', enabled: false },
     { id: 'process', enabled: false },
-    { id: 'contact', enabled: false },
+    {
+      id: 'contact',
+      enabled: true,
+      eyebrow: 'DETAILS',
+      title: 'CONTACT',
+      portrait: 'images/portrait.jpg',
+      portraitAlt: 'Portrait of Stephan Bezuidenhout',
+      aboutTitle: 'ABOUT ME',
+      body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+      buttons: [
+        { label: 'RESUME  >', href: 'resume.pdf', style: 'outline' },
+        { label: 'CONTACT  >', href: 'mailto:steviebez@gmail.com', style: 'filled' },
+      ],
+      delays: { eyebrow: 0, title: 0.1, photo: 0.2, about: 0.3, body: 0.35, buttons: 0.4 },
+    },
     { id: 'footer', enabled: false },
   ],
 } satisfies SiteConfig;
