@@ -293,7 +293,7 @@ export const siteConfig = {
     title: 'STEVIEBEZ — Senior Multimedia Designer',
     description: 'Portfolio of Stevie Bezuidenhout — Senior Multimedia Designer.',
     lang: 'en',
-    siteUrl: 'https://steviebez.github.io/steviebez',
+    siteUrl: 'https://steviebez.github.io/steviebez-portfolio-',
     owner: {
       name: 'Stephan Bezuidenhout',
       role: 'Senior Multimedia Designer',
