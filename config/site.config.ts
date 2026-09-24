@@ -34,6 +34,7 @@ export interface FontStack {
   weights: number[];
   fallback: string;
   usage: string;
+  active: boolean;
 }
 
 export interface Typography {
@@ -111,6 +112,7 @@ export interface HeroContent {
 
 export interface WhyRow {
   label: string;
+  body: string;
   img: string;
   alt: string;
   /** text side: 'left' (image right) or 'right' (image left) */
@@ -151,7 +153,7 @@ export interface WorkProject {
   /** section anchor: betway | spotify | kenvue */
   id: string;
   theme: 'dark' | 'paper';
-  /** imagery column side on desktop; stacked imagery-first on mobile */
+  /** imagery column side on desktop; all-left is intentional per Figma mocks */
   imageSide: 'left' | 'right';
   logo: string;
   logoAlt: string;
@@ -259,8 +261,10 @@ export interface ArticlesContent {
   eyebrow: string;
   title: string;
   delays: { eyebrow: number; title: number };
+  /** fixed 2×2 grid by design — widen to ArticleCard[] if it ever grows */
   left: [ArticleCard, ArticleCard];
   right: [ArticleCard, ArticleCard];
+  /** all four cards share one painting image until per-card art is supplied */
 }
 
 export type SectionContent =
@@ -318,17 +322,19 @@ export const siteConfig = {
       weights: [400],
       fallback: 'Georgia, serif',
       usage: 'hero name, section headlines',
+      active: true,
     },
     support: {
       family: 'Barlow',
       weights: [400, 500, 600, 700],
       fallback: 'system-ui, sans-serif',
       usage: 'eyebrows, skill lines, labels',
+      active: true,
     },
     legacy: [
-      { family: 'Playfair Display', weights: [500, 600], fallback: 'Georgia, serif', usage: 'removed' },
-      { family: 'Inter', weights: [400, 500, 600, 700, 800], fallback: 'system-ui, sans-serif', usage: 'removed' },
-      { family: 'IBM Plex Mono', weights: [400, 500, 600], fallback: 'monospace', usage: 'removed' },
+      { family: 'Playfair Display', weights: [500, 600], fallback: 'Georgia, serif', usage: 'removed', active: false },
+      { family: 'Inter', weights: [400, 500, 600, 700, 800], fallback: 'system-ui, sans-serif', usage: 'removed', active: false },
+      { family: 'IBM Plex Mono', weights: [400, 500, 600], fallback: 'monospace', usage: 'removed', active: false },
     ],
     googleFontsUrl:
       'https://fonts.googleapis.com/css2?family=Prata&family=Barlow:wght@400;500;600;700&display=swap',
@@ -363,7 +369,7 @@ export const siteConfig = {
       opacityMs: 700,
       transformMs: 800,
       easing: 'cubic-bezier(.22,1,.36,1)',
-      observerThreshold: 0,
+      observerThreshold: 0.05,
     },
     snap: { enabled: true, type: 'y mandatory', minWidth: 1024 },
     reducedMotion: 'force all visible, no transitions',
@@ -400,8 +406,8 @@ export const siteConfig = {
           logoAlt: 'Betway',
           logoInvert: true,
           headline: 'LEADING COMPLETE REBRAND',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.',
-          linkLabel: 'PROJECT LINK >',
+          body: 'At the peak of the post-COVID esports boom, Betway\u2019s esports vertical had yet to receive a visual overhaul aligned with the wider company rebrand. I was assigned to lead it \u2014 designing the system from the ground up across social, digital, and OOH, then templatising every asset type for rollout across 17 regions and 8+ languages. That meant documentation, motion templates, implementation guides, and direct training sessions with regional teams to ensure the new visual identity landed consistently.',
+          linkLabel: 'VIEW CASE STUDY',
           linkHref: 'https://www.behance.net/gallery/168940825/Betway-Esports-Evolution',
           images: [
             { src: 'images/betway-1.jpg', alt: 'Betway esports sports bonus banner' },
@@ -419,10 +425,10 @@ export const siteConfig = {
           logoAlt: 'Kenvue',
           logoInvert: false,
           headline: 'CAMPAIGN CONTENT AND REGIONALIZATION',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.',
-          linkLabel: 'PROJECT LINK >',
+          body: 'As core designer for Kenvue\u2019s EMEA region, I produced assets across a portfolio of global consumer health brands \u2014 including Neutrogena, Listerine, and Johnson & Johnson. Deliverables ranged from video and display banners to social content, each adapted per market with translation and localisation built into the production workflow. Worked alongside in-market designers to maintain brand consistency across the region.',
+          linkLabel: 'VIEW CASE STUDY',
           linkHref: 'https://www.behance.net/gallery/249239709/KENVUE-BITES',
-          images: [],
+          images: [], // TODO: Kenvue campaign imagery not yet sourced — band renders text-only
           delays: { logo: 0, headline: 0.1, body: 0.2, link: 0.3 },
         },
         {
@@ -434,8 +440,8 @@ export const siteConfig = {
           logoAlt: 'Spotify',
           logoInvert: false,
           headline: 'SOCIAL MEDIA CONTENT CREATION',
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.',
-          linkLabel: 'PROJECT LINK >',
+          body: 'A retained creative partnership covering the full scope of Spotify\u2019s social output \u2014 from static imagery and motion graphics to video edits, podcast visuals, and interview content. Delivered across channels on demand, maintaining Spotify\u2019s visual energy across every format the platform required.',
+          linkLabel: 'VIEW CASE STUDY',
           linkHref: 'https://www.behance.net/gallery/249222587/Spotify-Bites-2023',
           images: [
             { src: 'images/spotify-1.jpg', alt: 'Spotify Wrapped top charts tiles' },
@@ -477,14 +483,12 @@ export const siteConfig = {
       },
       logos: [
         { name: 'Oracle', src: 'images/logos/oracle.svg', alt: 'Oracle' },
-        { name: 'Sprite', src: 'images/logos/sprite.svg', alt: 'Sprite' },
+        { name: 'Coca-Cola', src: 'images/logos/cocacola.svg', alt: 'Coca-Cola' },
         { name: 'Kenvue', src: 'images/logos/kenvue.png', alt: 'Kenvue' },
-        { name: 'VML', src: 'images/logos/vml.png', alt: 'VML' },
         { name: 'Betway', src: 'images/logos/betway.svg', alt: 'Betway' },
         { name: 'Mondelez International', src: 'images/logos/mondelez.svg', alt: 'Mondelez International' },
         { name: 'Audible', src: 'images/logos/audible.svg', alt: 'Audible' },
         { name: 'Accenture', src: 'images/logos/accenture.svg', alt: 'Accenture' },
-        { name: 'Aromat', src: 'images/logos/aromat.png', alt: 'Aromat' },
         { name: 'Spotify', src: 'images/logos/spotify.svg', alt: 'Spotify' },
         { name: 'West Ham United', src: 'images/logos/westham.svg', alt: 'West Ham United' },
         { name: 'BMW', src: 'images/logos/bmw.svg', alt: 'BMW' },
@@ -492,6 +496,7 @@ export const siteConfig = {
         { name: 'Razer', src: 'images/logos/razer.svg', alt: 'Razer' },
         { name: 'Furia Esports', src: 'images/logos/furia.png', alt: 'Furia Esports' },
         { name: 'G2 Esports', src: 'images/logos/g2.png', alt: 'G2 Esports' },
+        { name: 'NIP', src: 'images/logos/nip.svg', alt: 'Ninjas in Pyjamas' },
         { name: 'WPP', src: 'images/logos/wpp.svg', alt: 'WPP' },
         { name: 'Ford', src: 'images/logos/ford.svg', alt: 'Ford' },
         { name: 'Nestle', src: 'images/logos/nestle.svg', alt: 'Nestle' },
@@ -503,13 +508,14 @@ export const siteConfig = {
       id: 'why',
       enabled: true,
       eyebrow: 'Why me?',
-      titleBefore: 'Familiar with brand identity and the language of',
-      titleAccent: 'design',
-      subLines: ['Creating scalable design', 'imagery and visuals'],
+      titleBefore: 'Versed in brand systems and the tools of',
+      titleAccent: 'modern design,',
+      subLines: ['Building systems that scale', 'across platforms and markets'],
       delays: { eyebrow: 0, title: 0.1, sub: 0.2 },
       rows: [
         {
           label: 'Technical Understanding',
+          body: 'I build my own automation and AI workflows rather than waiting for software to catch up. From generative pipelines to MCP-connected tooling, the technical layer is where my output separates itself.',
           img: 'images/why-technical.jpg',
           alt: 'Monochrome geometric paper study',
           side: 'left',
@@ -518,6 +524,7 @@ export const siteConfig = {
         },
         {
           label: 'Experience',
+          body: 'A decade-plus across agency and in-house \u2014 brand identity, motion, digital, and OOH at scale. Delivered across 17 regions and 8+ languages, from stakeholder decks to production-ready assets.',
           img: 'images/why-experience.jpg',
           alt: 'Red light reflected on wet asphalt',
           side: 'right',
@@ -526,6 +533,7 @@ export const siteConfig = {
         },
         {
           label: 'Always Learning',
+          body: 'The tools are shifting fast. AI is already in my active workflow \u2014 not experimentally, but as a production layer that improves both speed and output quality. That keeps my work ahead of most briefs.',
           img: 'images/why-learning.jpg',
           alt: 'Blue foliage at night',
           side: 'left',
@@ -543,20 +551,20 @@ export const siteConfig = {
       left: [
         {
           title: 'DIRECTING MACHINES',
-          body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+          body: 'An approach to AI image generation that maintains visual consistency while producing widely varied results \u2014 using a persistent moodboard as a style anchor to direct each output. Creative control without creative constraint.',
           image: 'images/article-painting.jpg',
           imageAlt: 'Orange abstract painting with white line work',
-          linkLabel: 'PROJECT LINK >',
+          linkLabel: 'PROJECT LINK',
           linkHref:
             'https://www.linkedin.com/pulse/directing-machines-building-automated-creative-local-bezuidenhout-zzgjf/',
           delay: 0.2,
         },
         {
           title: 'BEHANCE PORTFOLIO',
-          body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+          body: 'A curated archive of visual work spanning brand identity, motion, and digital design. Case studies, process breakdowns, and completed projects \u2014 updated as work ships.',
           image: 'images/article-painting.jpg',
           imageAlt: 'Orange abstract painting with white line work',
-          linkLabel: 'PROJECT LINK >',
+          linkLabel: 'PROJECT LINK',
           linkHref: 'https://www.behance.net/steviebez',
           delay: 0.4,
         },
@@ -564,19 +572,19 @@ export const siteConfig = {
       right: [
         {
           title: 'DRIBBBLE',
-          body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+          body: 'Shot-by-shot visual work \u2014 refined details, quick experiments, and the in-between moments that don\u2019t make the full case study. A more immediate view of what\u2019s on the board.',
           image: 'images/article-painting.jpg',
           imageAlt: 'Orange abstract painting with white line work',
-          linkLabel: 'PROJECT LINK >',
+          linkLabel: 'PROJECT LINK',
           linkHref: 'https://dribbble.com/steviebez',
           delay: 0.3,
         },
         {
-          title: 'AI WORKFLOW WITH MCP',
-          body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+          title: 'SITE AS SYSTEM',
+          body: 'How this portfolio was designed and built using AI and MCP to create a fully iterative, automated production process \u2014 from brief to deployment. A practical walkthrough of the tools and decisions behind it.',
           image: 'images/article-painting.jpg',
           imageAlt: 'Orange abstract painting with white line work',
-          linkLabel: 'PROJECT LINK >',
+          linkLabel: 'PROJECT LINK',
           linkHref:
             'https://www.linkedin.com/pulse/developing-real-time-telemetry-dashboard-ltx-video-23-bezuidenhout-5laaf/',
           delay: 0.5,
@@ -592,10 +600,10 @@ export const siteConfig = {
       portrait: 'images/portrait.jpg',
       portraitAlt: 'Portrait of Stephan Bezuidenhout',
       aboutTitle: 'ABOUT ME',
-      body: 'Lorem ipsum dolor sit amet consectetur adipiscing elit adipiscing dolor mollitia dolor quod temporibus eligendi officia sunt amet possimus exercitation occaecat in id ipsum atque lorem eos maxime qui est culpa non occaecat nostrud illum iusto labore lorem magna fugiat fugiat cillum nostrud in ut placeat eos mollitia veniam atque.',
+      body: 'Senior multimedia designer based in Cape Town, with over a decade across agency and in-house environments. I specialise in brand identity, motion design, and scalable design systems \u2014 with a growing focus on AI-assisted production workflows. I\u2019ve led teams, trained regional designers, and delivered work across 17+ markets. I work well independently and within larger creative structures.',
       buttons: [
-        { label: 'RESUME  >', href: 'resume.pdf', style: 'outline' },
-        { label: 'CONTACT  >', href: 'mailto:steviebez@gmail.com', style: 'filled' },
+        { label: 'RESUME', href: 'resume.pdf', style: 'outline' },
+        { label: 'CONTACT', href: 'mailto:steviebez@gmail.com', style: 'filled' },
       ],
       delays: { eyebrow: 0, title: 0.1, photo: 0.2, about: 0.3, body: 0.35, buttons: 0.4 },
     },

@@ -16,6 +16,9 @@ function Card({ card }) {
       <Reveal delay={card.delay + 0.1}>
         <a className="article-link" href={card.linkHref} target="_blank" rel="noopener">
           {card.linkLabel}
+          <span className="link-arrow" aria-hidden="true">
+            &gt;
+          </span>
         </a>
       </Reveal>
     </article>

@@ -12,6 +12,9 @@ export default function App() {
   // Landing page pieces — further sections added one at a time on request.
   return (
     <>
+      <a className="skip-link" href="#work">
+        Skip to content
+      </a>
       <Hero />
       <Work />
       <Showreel />

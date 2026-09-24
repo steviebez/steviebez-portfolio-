@@ -1,38 +1,38 @@
 import { FadeImg, Reveal } from './ui.jsx';
+import { siteConfig } from '../../config/site.config';
 
-const ROWS = [
-  { label: 'Technical Understanding', img: 'images/why-technical.jpg', alt: 'Monochrome geometric paper study', flip: false, from: 'left' },
-  { label: 'Experience', img: 'images/why-experience.jpg', alt: 'Red light reflected on wet asphalt', flip: true, from: 'right' },
-  { label: 'Always Learning', img: 'images/why-learning.jpg', alt: 'Blue foliage at night', flip: false, from: 'left' },
-];
+const why = siteConfig.sections.find((s) => s.id === 'why');
 
 export default function WhyMe() {
+  if (!why || !why.enabled) return null;
   return (
     <section className="block why" id="why">
       <div className="wrap">
         <div className="why-head">
           <Reveal>
-            <p className="why-eyebrow">Why me?</p>
+            <p className="why-eyebrow">{why.eyebrow}</p>
           </Reveal>
-          <Reveal delay={0.1}>
+          <Reveal delay={why.delays.title}>
             <h2 className="why-title">
-              Familiar with brand identity and
-              the language of <em>design</em>
+              {why.titleBefore} <em>{why.titleAccent}</em>
             </h2>
           </Reveal>
-          <Reveal delay={0.2}>
+          <Reveal delay={why.delays.sub}>
             <p className="why-sub">
-              Creating scalable design
+              {why.subLines[0]}
               <br />
-              imagery and visuals
+              {why.subLines[1]}
             </p>
           </Reveal>
         </div>
         <div className="why-rows">
-          {ROWS.map((r, i) => (
-            <Reveal key={r.label} delay={0.3 + i * 0.1} from={r.from}>
-              <div className={`why-row${r.flip ? ' flip' : ''}`}>
-                <p className="why-label">{r.label}</p>
+          {why.rows.map((r) => (
+            <Reveal key={r.label} delay={r.delay} from={r.from}>
+              <div className={`why-row${r.side === 'right' ? ' flip' : ''}`}>
+                <div className="why-text">
+                  <p className="why-label">{r.label}</p>
+                  <p className="why-row-body">{r.body}</p>
+                </div>
                 <div className="why-img">
                   <FadeImg src={r.img} alt={r.alt} />
                 </div>

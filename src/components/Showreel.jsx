@@ -6,7 +6,9 @@ const reel = siteConfig.sections.find((s) => s.id === 'showreel');
 
 export default function Showreel() {
   const [playing, setPlaying] = useState(false);
+  const [failed, setFailed] = useState(false);
   if (!reel || !reel.enabled) return null;
+  const watchUrl = `https://www.youtube.com/watch?v=${reel.videoId}`;
   return (
     <section className="block showreel" id="showreel">
       <div className="wrap showreel-head">
@@ -19,12 +21,16 @@ export default function Showreel() {
       </div>
       <div className="wrap">
         <div className="showreel-frame">
-          {playing ? (
+          {playing && !failed ? (
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${reel.videoId}?autoplay=1&rel=0`}
               title="Showreel"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
+              onError={() => {
+                setFailed(true);
+                setPlaying(false);
+              }}
             />
           ) : (
             <button
@@ -40,6 +46,14 @@ export default function Showreel() {
             </button>
           )}
         </div>
+        {failed && (
+          <p className="showreel-fallback">
+            Video unavailable here —{' '}
+            <a href={watchUrl} target="_blank" rel="noopener">
+              watch on YouTube
+            </a>
+          </p>
+        )}
       </div>
     </section>
   );

@@ -33,6 +33,9 @@ export default function ProjectBand({ project: p }) {
           <Reveal delay={p.delays.link}>
             <a className="band-link" href={p.linkHref} target="_blank" rel="noopener">
               {p.linkLabel}
+              <span className="link-arrow" aria-hidden="true">
+                &gt;
+              </span>
             </a>
           </Reveal>
         </div>

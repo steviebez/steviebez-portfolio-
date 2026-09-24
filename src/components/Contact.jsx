@@ -43,6 +43,9 @@ export default function Contact() {
                   {...(b.href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {})}
                 >
                   {b.label}
+                  <span className="link-arrow" aria-hidden="true">
+                    &gt;
+                  </span>
                 </a>
               ))}
             </div>

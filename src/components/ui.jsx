@@ -21,7 +21,7 @@ export function Reveal({ children, delay = 0, from = 'up', className = '' }) {
       }
     };
     sync();
-    const io = new IntersectionObserver(() => sync(), { threshold: 0 });
+    const io = new IntersectionObserver(() => sync(), { threshold: 0.05 });
     io.observe(el);
     return () => io.disconnect();
   }, []);
